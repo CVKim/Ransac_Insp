@@ -1,9 +1,65 @@
-# Ransac_Insp
+# Ransac_Insp: RANSAC 기반 원형 제품 결함 검출 알고리즘
 
-It is a RANSAC-based algorithm that detects defects of circular products, specifically those that have indented or protruded irregularities.
+본 프로젝트는 RANSAC(RANdom SAmple Consensus) 알고리즘을 활용하여 원형 제품의 표면에 존재하는 함몰 또는 돌출 형태의 결함을 효과적으로 검출합니다.
 
-- **All**: Images subject to inspection
-- **Debug**: Stores pre-processing and post-processing images for debugging
-- **Result**: Stores the resulting images after judgment
-  
+## 1. 개요
+
+- **목표:** 원형 제품 이미지에서 RANSAC 알고리즘을 기반으로 함몰 또는 돌출된 불규칙성을 자동으로 감지합니다.
+- **핵심 기술:**
+    - **원 검출:** `fast_accurate_circle_detection` 라이브러리를 사용하여 이미지 내의 원형 영역을 빠르고 정확하게 찾습니다.
+    - **이상 영역 탐지:** 검출된 원의 경계를 따라 RANSAC 알고리즘을 적용하여 정상적인 원형 패턴에서 벗어난 영역을 식별합니다.
+    - **결함 분석:** DBSCAN 클러스터링을 통해 탐지된 이상 영역을 그룹화하고, 각 그룹의 곡률을 분석하여 결함 여부를 판단합니다.
+
+## 2. 디렉토리 구조
+
+```
+Ransac_Insp/
+├── All/       # 검사 대상 이미지 저장 디렉토리
+├── Debug/     # 디버깅을 위한 중간 처리 결과 이미지 저장 디렉토리
+└── Result/    # 최종 결함 검출 결과 이미지 저장 디렉토리
+```
+
+## 3. 이미지 예시
+
 <img width="134" alt="KakaoTalk_Photo_2023-07-30-19-36-32" src="https://github.com/CVKim/Ransac_Insp/assets/90014998/9b4fc522-f766-402b-a2b3-aa9a30800923">
+
+## 4. 주요 기능
+
+- **정확한 원 검출:** 고성능 원 검출 라이브러리를 사용하여 노이즈가 많은 환경에서도 원형 객체를 안정적으로 식별합니다.
+- **강력한 이상치 처리:** RANSAC 알고리즘의 특성을 활용하여 이미지 내의 노이즈나 다른 형태의 이상치에 강인하게 결함을 검출합니다.
+- **결함 영역 클러스터링 및 분석:** DBSCAN을 통해 인접한 이상 픽셀들을 그룹화하고, 각 클러스터의 곡률을 계산하여 결함의 특징을 분석합니다.
+- **직관적인 결과 시각화:** 검출된 결함 영역을 원본 이미지에 강조하여 표시하고, 디버깅 과정을 위한 다양한 중간 결과 이미지를 제공합니다.
+
+## 5. 사용 라이브러리
+
+- **OpenCV (`cv2`):** 이미지 처리, 컴퓨터 비전 알고리즘
+- **NumPy (`numpy`):** 효율적인 배열 연산 및 수치 계산
+- **scikit-learn (`sklearn`):** 머신러닝 알고리즘 (DBSCAN 클러스터링)
+- **SciPy (`scipy`):** 과학 기술 계산 함수 (곡선 피팅)
+- **Fast Circle Detection (`fast_circle_detection`):** 빠르고 정확한 원 검출
+- **Pathlib (`pathlib`):** 파일 및 디렉토리 경로 관리
+- **OS (`os`):** 운영체제 상호 작용
+- **Itertools (`itertools`):** 효율적인 반복자 생성
+- **Random (`random`):** 난수 생성
+- **Math (`math`):** 수학 함수
+
+## 6. 주요 코드 구조
+
+- **`ContactLensDetector` 클래스:** 이미지 로드, 전처리, 원 검출, 결함 탐지, 결과 저장 등 전체 검사 과정을 관리하는 핵심 클래스입니다. 다양한 이미지 처리 함수와 결함 분석 관련 함수를 내장하고 있습니다.
+- **RANSAC 관련 함수:** 원 검출의 정확성을 높이고 이상치를 효과적으로 제거하기 위한 RANSAC 알고리즘 관련 함수들이 구현되어 있습니다.
+- **결함 분석 함수:** `cluster_outside_points`, `fit_curve_and_calculate_curvature`, `is_defective` 등의 함수를 통해 탐지된 이상 영역을 클러스터링하고 곡률을 분석하여 결함 여부를 판단합니다.
+- **시각화 및 유틸리티 함수:** `generate_colors`, `create_clustered_image`, `save_debug_image`, `save_result_image` 등의 함수를 통해 검사 과정 및 결과를 시각적으로 표현하고, 파일 시스템 관련 작업을 지원합니다.
+
+## 7. 실행 방법
+
+1. **필수 라이브러리 설치:**
+   ```bash
+   pip install opencv-python numpy scikit-learn scipy fast-circle-detection
+   ```
+2. **검사 이미지 준비:** 검사하고자 하는 원형 제품 이미지를 `All` 디렉토리에 저장합니다.
+3. **스크립트 실행:** 제공된 파이썬 스크립트를 실행합니다.
+4. **결과 확인:**
+   - 디버깅 과정의 중간 결과 이미지는 `Debug` 디렉토리에서 확인할 수 있습니다.
+   - 최종 결함 검출 결과 이미지는 `Result` 디렉토리에 저장됩니다.
+  
+
